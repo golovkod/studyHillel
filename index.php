@@ -1,61 +1,130 @@
 <?php
 
-$list = [
-    ['aaa', 'bbb', 'ccc', 'dddd'],
-    ['123', '456', '789'],
-    ['"aaa"', '"bbb"']
-];
-
-/**
- * функция записи в csv file
- * @param array $csv| massive of datagit init
- * @param null $file| your path to file
- * @return bool
- */
-function writeCSV(Array $csv, $file = null):bool {
-    if (!is_array($csv))
-        return false;
-
-    if ($file && !is_dir( dirname($file)))
-        return false;
-    $handle = fopen($file, "w");
-    foreach ($csv as $value) {
-        fputcsv($handle, $value, ";");
-    }
-    fclose($handle); //Закрываем
-    return true;
-}
-
-/**
- *  функция чтения в csv file
- * @param null $file | your path to file
- * @return array
- */
-function readCSV($file = null):array {
-    $list = [];
-    if ($file && ! is_dir(dirname($file)))
-        return $list;
-
-    if (($fp = fopen($file, "r")) !== FALSE) {
-        while (($data = fgetcsv($fp, 0, ";")) !== FALSE) {
-            $list[] = $data;
-        }
-        fclose($fp);
-    }
-    return $list;
-}
-
-function test(string $inputString):string
+// Создать абстрактный класс "животные"
+abstract class Animals
 {
-    return $inputString;
+    abstract function getAnimalType(): string;
 }
 
-// фабрика вызова функций пользователя через closure
-$callfunc = function(callable $nameFun, $args) {
-    return $nameFun($args);
-};
+//Создать наследников от животных - хищники, травоядные
+class Predators extends Animals
+{
 
-print_r($callfunc('readCSV', 'test.csv'));
+    function getAnimalType(): string
+    {
+        return "Wolf";
+    }
+}
+
+//Создать наследников от животных - хищники, травоядные
+class GrassFeeding extends Animals
+{
+
+    function getAnimalType(): string
+    {
+        return "Zebra";
+    }
+}
+
+//Создать абстрактный класс "Транспортные средства"
+abstract class Transport
+{
+    abstract function getTransType(): string;
+}
+
+// Создать наследников от транспортных средств - лодки, легковые авто, грузовики
+class Boat extends Transport
+{
+
+    function getTransType(): string
+    {
+        return "Boat";
+    }
+}
+
+// Создать наследников от транспортных средств - лодки, легковые авто, грузовики
+class Car extends Transport
+{
+
+    function getTransType(): string
+    {
+        return "Car";
+    }
+}
+
+// Создать наследников от транспортных средств - лодки, легковые авто, грузовики
+class heavyCar extends Transport
+{
+
+    function getTransType(): string
+    {
+        return "Heavy Car";
+    }
+}
+
+// Создать хелпер работающий с массивами
+class HelperArray
+{
+    static function array_move_elem($array, $from, $to)
+    {
+        if ($from == $to) {
+            return $array;
+        }
+        $c = count($array);
+        if (($c > $from) and ($c > $to)) {
+            if ($from < $to) {
+                $f = $array[$from];
+                for ($i = $from; $i < $to; $i++) {
+                    $array[$i] = $array[$i + 1];
+                }
+                $array[$to] = $f;
+            } else {
+                $f = $array[$from];
+                for ($i = $from; $i > $to; $i--) {
+                    $array[$i] = $array[$i - 1];
+                }
+                $array[$to] = $f;
+            }
+
+        }
+        return $array;
+    }
+
+}
+
+//Создать хелпер работающий со строками
+class HelperString
+{
+
+    static function contains($haystack, $needle)
+    {
+        if (!empty($haystack) && !empty($needle)) {
+            if (strpos($haystack, $needle) !== false) {
+
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
 
 
+}
 
+
+$boat = new Boat();
+$car = new Car();
+$heavyCar = new heavyCar();
+var_dump($array = [$boat->getTransType(), $car->getTransType(), $heavyCar->getTransType()]);
+
+$Predator = new Predators();
+$GrassFeeding = new GrassFeeding();
+
+var_dump($array = [$Predator->getAnimalType(), $GrassFeeding->getAnimalType()]);
+
+$arraytest = ['Test', 'Test1', 'Test2'];
+$arraytest = HelperArray::array_move_elem($arraytest, 0, 1);
+print_r($arraytest);
+
+$test = 'SomeString Test';
+var_dump(HelperString::contains($test, "Test"));
