@@ -64,9 +64,10 @@ class heavyCar extends Transport
 }
 
 //Создать хелпер работающий с массивами
+
 class HelperArray
 {
-    static function array_move_elem($array, $from, $to)
+   public static function array_move_elem($array, $from, $to)
     {
         if ($from == $to) {
             return $array;
@@ -97,7 +98,7 @@ class HelperArray
 class HelperString
 {
 
-    static function contains($haystack, $needle)
+   public static function contains($haystack, $needle)
     {
         if (!empty($haystack) && !empty($needle)) {
             if (strpos($haystack, $needle) !== false) {
@@ -111,7 +112,6 @@ class HelperString
 
 
 }
-
 
 $boat = new Boat();
 $car = new Car();
