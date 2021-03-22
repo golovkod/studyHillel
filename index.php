@@ -28,9 +28,9 @@ interface Transmission
 // трейт для рассчета мощности на основе обьема и оборотов двигателя
 trait VehiclePowerEngine
 {
-    function calculatePowerEngine (): float
+    function calculatePowerEngine (float $EngineVolume, float $EngineTurnovers): float
     {
-     return $this->getEngineVolume()*($this->getEngineTurnovers()/60);
+     return $EngineVolume*($EngineTurnovers/60);
     }
 }
 
@@ -77,4 +77,4 @@ class Car implements Body, WheelFormula, Engine, Transmission
 
 $bmw = new car();
 echo $bmw->getBody() . "<br/>",  $bmw->getWheelF() . "<br/>", $bmw->getEngineType() . "<br/>", $bmw->getEngineVolume() . "<br/>", $bmw->getTransmission(). "<br/>";
-echo($bmw->calculatePowerEngine());
+echo($bmw->calculatePowerEngine(2,1.5));
