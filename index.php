@@ -1,131 +1,80 @@
 <?php
 
-
-// Создать абстрактный класс "животные"
-abstract class Animals
+// Создать интерфейсы и реализации к ним тип кузова
+Interface Body
 {
-    abstract function getAnimalType(): string;
+public function getBody():string;
 }
 
-//Создать наследников от животных - хищники, травоядные
-class Predators extends Animals
+// Создать интерфейсы и реализации к ним колесная формула
+Interface WheelFormula
 {
+    public function getWheelF():string;
+}
+// Создать интерфейсы и реализации к ним двигатель
+Interface Engine
+{
+    public function getEngineType():string;
+    public function getEngineVolume():float;
+    public function getEngineTurnovers():float;
+}
 
-    function getAnimalType(): string
+// Создать интерфейсы и реализации к ним коробка передач
+interface Transmission
+{
+    public function getTransmission(): string;
+}
+
+// трейт для рассчета мощности на основе обьема и оборотов двигателя
+trait VehiclePowerEngine
+{
+    function calculatePowerEngine (float $EngineVolume, float $EngineTurnovers): float
     {
-        return "Wolf";
+     return $EngineVolume*($EngineTurnovers/60);
     }
 }
 
-//Создать наследников от животных - хищники, травоядные
-class GrassFeeding extends Animals
+class Car implements Body, WheelFormula, Engine, Transmission
 {
+    use VehiclePowerEngine;
+    protected string $body = "minivan";
+    protected string $wheelF = "2x4";
+    protected string $engineType = "v10";
+    protected float $engineVolume = 2.5;
+    protected float $engineTurnovers = 1.1;
+    protected string $transmission = "manual";
 
-    function getAnimalType(): string
+    public function getBody(): string
     {
-        return "Zebra";
+        return $this->body;
+    }
+
+    public function getWheelF(): string
+    {
+        return $this->wheelF;
+    }
+
+    public function getEngineType(): string
+    {
+        return $this->engineType;
+    }
+
+    public function getEngineVolume(): float
+    {
+        return $this->engineVolume;
+    }
+
+    public function getTransmission(): string
+    {
+        return $this->transmission;
+    }
+
+    public function getEngineTurnovers(): float
+    {
+        return $this->engineTurnovers;
     }
 }
 
-//Создать абстрактный класс "Транспортные средства"
-abstract class Transport
-{
-    abstract function getTransType(): string;
-}
-
-// Создать наследников от транспортных средств - лодки, легковые авто, грузовики
-class Boat extends Transport
-{
-
-    function getTransType(): string
-    {
-        return "Boat";
-    }
-}
-
-// Создать наследников от транспортных средств - лодки, легковые авто, грузовики
-class Car extends Transport
-{
-
-    function getTransType(): string
-    {
-        return "Car";
-    }
-}
-
-// Создать наследников от транспортных средств - лодки, легковые авто, грузовики
-class heavyCar extends Transport
-{
-
-    function getTransType(): string
-    {
-        return "Heavy Car";
-    }
-}
-
-//Создать хелпер работающий с массивами
-
-class HelperArray
-{
-   public static function array_move_elem($array, $from, $to)
-    {
-        if ($from == $to) {
-            return $array;
-        }
-        $c = count($array);
-        if (($c > $from) and ($c > $to)) {
-            if ($from < $to) {
-                $f = $array[$from];
-                for ($i = $from; $i < $to; $i++) {
-                    $array[$i] = $array[$i + 1];
-                }
-                $array[$to] = $f;
-            } else {
-                $f = $array[$from];
-                for ($i = $from; $i > $to; $i--) {
-                    $array[$i] = $array[$i - 1];
-                }
-                $array[$to] = $f;
-            }
-
-        }
-        return $array;
-    }
-
-}
-
-//cоздать хелпер работающий со строками
-class HelperString
-{
-
-   public static function contains($haystack, $needle)
-    {
-        if (!empty($haystack) && !empty($needle)) {
-            if (strpos($haystack, $needle) !== false) {
-
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
-
-
-}
-
-$boat = new Boat();
-$car = new Car();
-$heavyCar = new heavyCar();
-var_dump($array = [$boat->getTransType(), $car->getTransType(), $heavyCar->getTransType()]);
-
-$Predator = new Predators();
-$GrassFeeding = new GrassFeeding();
-
-var_dump($array = [$Predator->getAnimalType(), $GrassFeeding->getAnimalType()]);
-
-$arraytest = ['Test', 'Test1', 'Test2'];
-$arraytest = HelperArray::array_move_elem($arraytest, 0, 1);
-print_r($arraytest);
-
-$test = 'SomeString Test';
-var_dump(HelperString::contains($test, "Test"));
+$bmw = new car();
+echo $bmw->getBody() . "<br/>",  $bmw->getWheelF() . "<br/>", $bmw->getEngineType() . "<br/>", $bmw->getEngineVolume() . "<br/>", $bmw->getTransmission(). "<br/>";
+echo($bmw->calculatePowerEngine(2,1.5));
