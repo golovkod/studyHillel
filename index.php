@@ -1,80 +1,74 @@
 <?php
 
-// Создать интерфейсы и реализации к ним тип кузова
-Interface Body
-{
-public function getBody():string;
+require __DIR__ . '/configureDB.php';
+
+// Create connection
+$conn = new mysqli(servername, username, password, dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
-// Создать интерфейсы и реализации к ним колесная формула
-Interface WheelFormula
-{
-    public function getWheelF():string;
-}
-// Создать интерфейсы и реализации к ним двигатель
-Interface Engine
-{
-    public function getEngineType():string;
-    public function getEngineVolume():float;
-    public function getEngineTurnovers():float;
-}
+echo "Реализовать выборку всех заказов по одному из контрагентов" . "<br>";
+$sql = "SELECT * FROM Orders INNER JOIN Goods on Goods.id_goods=Orders.id_goods
+                    WHERE Orders.id_contragents=123";
+$result = $conn->query($sql);
 
-// Создать интерфейсы и реализации к ним коробка передач
-interface Transmission
-{
-    public function getTransmission(): string;
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "id: " . $row["id"] . " id_orders: " . $row["id_orders"] .
+            " quantity: " . $row["quantity"] . " id_goods: " . $row["id_goods"] .
+            " name: " . $row["name"] . " id_contragents " . $row["id_contragents"] . "<br>";
+    }
+} else {
+    echo "0 results";
 }
 
-// трейт для рассчета мощности на основе обьема и оборотов двигателя
-trait VehiclePowerEngine
-{
-    function calculatePowerEngine (float $EngineVolume, float $EngineTurnovers): float
-    {
-     return $EngineVolume*($EngineTurnovers/60);
+
+echo "Реализовать выборку задвоенных контрагентов" . "<br>";
+$sql = "SELECT * FROM Contragents WHERE name_contragents IN
+        (SELECT name_contragents  FROM Contragents GROUP BY name_contragents HAVING COUNT(name_contragents) > 1)";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "id: " . $row["id"] . " id_contragents: " . $row["id_contragents"] . " name_contragents " . $row["name_contragents"] . "<br>";
     }
+} else {
+    echo "0 results";
 }
 
-class Car implements Body, WheelFormula, Engine, Transmission
-{
-    use VehiclePowerEngine;
-    protected string $body = "minivan";
-    protected string $wheelF = "2x4";
-    protected string $engineType = "v10";
-    protected float $engineVolume = 2.5;
-    protected float $engineTurnovers = 1.1;
-    protected string $transmission = "manual";
+echo "Реализовать выборку всех оплаченных заказов" . "<br>";
+$sql = "SELECT * FROM Payment WHERE status_payment = 1";
+$result = $conn->query($sql);
 
-    public function getBody(): string
-    {
-        return $this->body;
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "id: " . $row["id"] . " id_orders: " . $row["id_orders"] . " status_payments " . $row["status_payment"] . "<br>";
     }
-
-    public function getWheelF(): string
-    {
-        return $this->wheelF;
-    }
-
-    public function getEngineType(): string
-    {
-        return $this->engineType;
-    }
-
-    public function getEngineVolume(): float
-    {
-        return $this->engineVolume;
-    }
-
-    public function getTransmission(): string
-    {
-        return $this->transmission;
-    }
-
-    public function getEngineTurnovers(): float
-    {
-        return $this->engineTurnovers;
-    }
+} else {
+    echo "0 results";
 }
 
-$bmw = new car();
-echo $bmw->getBody() . "<br/>",  $bmw->getWheelF() . "<br/>", $bmw->getEngineType() . "<br/>", $bmw->getEngineVolume() . "<br/>", $bmw->getTransmission(). "<br/>";
-echo($bmw->calculatePowerEngine(2,1.5));
+echo "Реализовать выборку по сумме всех заказов на контрагентов" . "<br>";
+
+$sql = "SELECT Contragents.id, Contragents.name_contragents, SUM(Orders.quantity * Goods.price) AS
+    allsum FROM Orders, Goods, Contragents
+WHERE Orders.id_goods = Goods.id_goods AND Contragents.id_contragents = Orders.id_contragents
+GROUP BY Orders.id_contragents";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "id: " . $row["id"] . " id_contragents: " . $row["name_contragents"] . " name_contragents " . $row["allsum"] . "<br>";
+    }
+} else {
+    echo "0 results";
+}
+
+
+$conn->close();
+
+
+
+
